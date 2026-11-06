@@ -13,7 +13,7 @@ This project was specifically engineered for maximum performance on legacy embed
 ✔️ **Header-Only Interface:** Minimalistic architecture for effortless integration into your CMake projects.  
 ✔️ **Combined Pin Modes:** No tedious flag management—logical direction and physical pull resistors are configured in a single, intuitive step.  
 ✔️ **Kernel-Level Debouncing:** Utilizes native Linux hardware/kernel-level debouncing via the libgpiod C-API.  
-✔️ **Safe-by-Default:** Safe-by-Default All requested lines are automatically reverted to a safe, high-impedance INPUT state.  
+✔️ **Safe-by-Default:** All requested lines are automatically reverted to a safe, high-impedance INPUT state.  
 ✔️ **GPIO Wrapper:** Works with libgpiod >=1.6.0
 
 ---

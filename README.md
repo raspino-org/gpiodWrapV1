@@ -8,6 +8,7 @@ A highly efficient, lightweight, and thread-safe C++17 wrapper library for **lib
 
 This project was specifically engineered for maximum performance on legacy embedded hardware (such as the **Raspberry Pi 1 / ARMv6** running Debian Bookworm). It eliminates unnecessary runtime overhead—such as map lookups—and utilizes atomic, lock-free CPU operations for robust signal and resource management.
 
+#### Also available for libgpiod V2 (v2.x) <a href="https://github.com/raspino-org/gpiodWrap">gpioWrap</a>
 ---
 ## 🚀 Features
 ✔️ **Header-Only Interface:** Minimalistic architecture for effortless integration into your CMake projects.  

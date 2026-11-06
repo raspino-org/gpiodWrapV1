@@ -137,27 +137,10 @@ If your application logic manages OS signals independently, the built-in signal 
 ```bash
 cmake -DGPIODWRAPV1_DISABLE_SIGNALS=ON ..
 ```
-1. In C++ Source Code:
+In C++ Source Code:
 ```
 #define GPIODWRAP_NO_SIGNALS
 #include "gpiodWrap.hpp"
-```
-
-2. Via CMake:
-```
-# old school
-mkdir -p build && cd build
-cmake .. -DGPIODWRAP_DISABLE_SIGNALS=ON
-make or make -j4
-
-# Directly in the project directory:
-cmake -B build -DGPIODWRAP_DISABLE_SIGNALS=ON
-cmake --build build
-```
-
-3. Direct GCC/Clang Invocation:
-```
-g++ -std=c++17 -DGPIODWRAP_NO_SIGNALS main.cpp -o app -lgpiod
 ```
 
 ---

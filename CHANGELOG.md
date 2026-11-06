@@ -1,0 +1,28 @@
+# Changelog gpiodWrapV1
+# Autor: Kay Donau
+
+Alle signifikanten Änderungen am gpiodWrapV1 werden hier dokumentiert.
+
+## - 2026-11-06
+
+> Initiales Release (v0.1.0) der libgpiod V1-Erweiterung.
+  Maßgeschneidert auf maximale Performance und Stabilität für ältere Linux-Systeme 
+  und Single-Core-Hardware wie den Raspberry Pi 1 (ARMv6) unter Bookworm (libgpiod v1.6.3).
+
+### Features und Optimierungen
+- **Feste Datenstrukturen statt Maps:** Jede GPIO-Line hat ihren eigenen, festen Speicherbereich (`static_line_data`). Das Layout wurde so optimiert, dass die Settings ideal in den CPU-Cache geladen werden können.
+- **ARMv6 Lock-Free Signal-Handling:** Die Signal-Flags verwenden `std::atomic<uint32_t>`, um auf dem alten Pi 1 (ARMv6) garantiert über `LDREX`/`STREX` echte Lock-Free-Operationen zu nutzen, anstatt teure Mutex-Sperren zu erzwingen.
+- **Kompaktes PinMode-Design:** Vereint logische Richtung und physikalische Hardware-Widerstände (Pull-Up/Pull-Down) in einer einzigen, selbsterklärenden Enum-Kombination (z. B. `PULLUP`, `OPEN_DRAIN`).
+- **Natives Kernel-Debouncing:** Die Entprellung nutzt die native `gpiod_line_set_config()`-Funktion des Kernels in Mikrosekunden-Präzision (µs).
+- **Zentraler Build-Ausgabeordner:** Das CMake-System wurde so optimiert, dass alle kompilierten Binärdateien der Beispiele automatisch in einem zentralen `/bin`-Ordner landen.
+
+### Added (API v0.1.0)
+- `configurePin()`: Richtet einen GPIO-Pin (Offset) mit kombiniertem `PinMode` und optionaler Entprellzeit (Debounce in ms) ein.
+- `setPin()`: Setzt den logischen Pegel eines Ausgangs-Pins (`HIGH`/`LOW`) hocheffizient direkt auf dem V1 `gpiod_line`-Handle.
+- `getPin()`: Liest den aktuellen Hardware-Zustand eines Pins aus.
+- `getPinChange()`: Zustandsüberwachung, die nur dann anschlägt und einen Wert zurückgibt (`std::optional`), wenn ein tatsächlicher Pegelwechsel stattgefunden hat.
+- `findChip()`: Automatischer Suchlauf im `/dev`-Verzeichnis nach bekannten Pi-GPIO-Chips (`pinctrl-rp1`, `rp1-gpio`, `pcm2712` etc.) anhand ihrer Driver-Label.
+- `closeChip()`: Schließt den Chip sicher, beendet den Watchdog und versetzt alle aktiven Pins über `safeStateLine()` automatisch in einen hochohmigen, sicheren `INPUT`-Zustand zurück.
+
+### Signal Handling
+- Integrierter Watchdog-Thread und Signal-Handler (`SIGINT`, `SIGTERM`) zur automatischen Ressourcenfreigabe bei Programmabbruch. Kann über das CMake-Flag `GPIODWRAPV1_DISABLE_SIGNALS` vor dem Kompilieren komplett deaktiviert werden.

@@ -176,7 +176,7 @@ constexpr int LED_PIN = 17;
 constexpr int BUTTON_PIN = 27;
 
 int main() {
-    // Configure Pin 27 as an input with an active pull-up and 30ms hardware debouncing
+    // Configure Pin 27 as an input with an active pull-up and 30ms hrtimer or hardware debouncing
     gpio.configurePin(BUTTON_PIN, PinMode::PULLUP, 30);
     
     // Configure Pin 17 as a standard push-pull output

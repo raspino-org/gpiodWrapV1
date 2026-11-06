@@ -1,13 +1,13 @@
-# Changelog gpiodWrapV1
-# Autor: Kay Donau
+## Changelog gpiodWrapV1
+### Autor: Kay Donau
 
 Alle signifikanten Änderungen am gpiodWrapV1 werden hier dokumentiert.
 
-## - 2026-11-06
+## [0.1.0] 2026-11-06
 
-> Initiales Release (v0.1.0) der libgpiod V1-Erweiterung.
-  Maßgeschneidert auf maximale Performance und Stabilität für ältere Linux-Systeme 
-  und Single-Core-Hardware wie den Raspberry Pi 1 (ARMv6) unter Bookworm (libgpiod v1.6.3).
+Initiales Release (v0.1.0) der libgpiod V1-Erweiterung.
+Maßgeschneidert auf maximale Performance und Stabilität für ältere Linux-Systeme 
+und Single-Core-Hardware wie den Raspberry Pi 1 (ARMv6) unter Bookworm (libgpiod v1.6.3).
 
 ### Features und Optimierungen
 - **Feste Datenstrukturen statt Maps:** Jede GPIO-Line hat ihren eigenen, festen Speicherbereich (`static_line_data`). Das Layout wurde so optimiert, dass die Settings ideal in den CPU-Cache geladen werden können.

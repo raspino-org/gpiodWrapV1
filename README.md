@@ -78,7 +78,7 @@ This wrapper provides easy functions like:
       <td>Reads the intput configured line and return Pinvalue HIGH/LOW/ERROR.</td>
     </tr>
     <tr>
-      <td><code>getPinEvent(pin)</code></td>
+      <td><code>getPinChange(pin)</code></td>
       <td>Reads the intput configured line and return Pinvalue HIGH/LOW/ERROR at every level change.</td>
     </tr>
   </tbody>

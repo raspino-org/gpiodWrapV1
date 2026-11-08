@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16) # Raspbian 10 Buster / Bookworm kompatibel
 
-project(gpiodWrapV1 VERSION 0.1.0 LANGUAGES CXX)
+project(gpiodWrapV1 VERSION 0.1.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -18,9 +18,9 @@ else()
         message(FATAL_ERROR "libgpiod >= 1.6.0 required but not found!\n -> Installed version: ${GPIOD_VERSION}\n -> Please install: sudo apt install libgpiod-dev")
     else()
 
-        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+        set(GPIODWRAPV1_BIN "${PROJECT_SOURCE_DIR}/bin" CACHE INTERNAL "")
 
-        option(GPIODWRAPV1_DISABLE_SIGNALS "Disable built-in signal handling and watchdog thread" OFF)
+        option(GPIODWRAPV1_DISABLE_SIGNALS "Disable built-in signal handling" OFF)
 
         add_library(gpiodWrapV1 INTERFACE)
 

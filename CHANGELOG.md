@@ -1,13 +1,28 @@
-# Changelog gpiodWrapV1
-# Autor: Kay Donau
+## Changelog gpiodWrapV1
+### Autor: Kay Donau
 
 Alle signifikanten Änderungen am gpiodWrapV1 werden hier dokumentiert.
 
-## - 2026-11-06
+## [0.1.1] 2026-11-07
 
-> Initiales Release (v0.1.0) der libgpiod V1-Erweiterung.
-  Maßgeschneidert auf maximale Performance und Stabilität für ältere Linux-Systeme 
-  und Single-Core-Hardware wie den Raspberry Pi 1 (ARMv6) unter Bookworm (libgpiod v1.6.3).
+> **Hotfix & Stabilitäts-Patch für die Flankenerkennung und API-Sicherheit**
+
+### Fixed
+- **`getPinChange()`:** Initialisierungs-Bug behoben: Beim Starten der Anwendung wird nicht mehr fälschlicherweise ein initialer Pegelwechsel signalisiert, wenn der Pin stabil auf seinem Standard-Level liegt. Die Funktion synchronisiert sich nun beim allerersten Aufruf unsichtbar mit dem aktuellen Hardware-Zustand des Pins. Erst bei einer tatsächlichen Pegeländerung nach dem Start wird ein Event gefeuert.
+- **Systemweite API-Absicherung:** Die validRequest()-Guard-Clause wurde nun konsequent in allen I/O-Pfaden (setPin, getPin, getPinChange, configurePin) aktiv geschaltet. Ungültige Pin-Offsets werden sofort am Funktionseingang abgefangen, wodurch Speicherzugriffsfehler (Segfaults) und undefiniertes Verhalten systemweit ausgeschlossen sind.
+- **CMakeLists:** Strukturierte generierung der Binärdateien im Ausgabeordner.
+
+### Optimized
+- **Kompaktes Zustands-Tracking (`LineChange`):** 
+  Einführung einer Struktur zur Verfolgung von Pegeländerungen mittels C++ Bitfields. Der aktuelle Zustand (`current`) und das Initialisierungs-Flag (`received`) belegen zusammen **nur 2 Bits** im Speicher. 
+  Das gesamte `line_change`-Array für alle verfügbaren GPIO-Lines belegt dadurch nur minimale Bytes im RAM, was maximale CPU-Cache-Effizienz garantiert und jeglichen Heap-Overhead ausschließt.
+
+---
+## [0.1.0] 2026-11-06
+
+Initiales Release (v0.1.0) der libgpiod V1-Erweiterung.
+Maßgeschneidert auf maximale Performance und Stabilität für ältere Linux-Systeme 
+und Single-Core-Hardware wie den Raspberry Pi 1 (ARMv6) unter Bookworm (libgpiod v1.6.3).
 
 ### Features und Optimierungen
 - **Feste Datenstrukturen statt Maps:** Jede GPIO-Line hat ihren eigenen, festen Speicherbereich (`static_line_data`). Das Layout wurde so optimiert, dass die Settings ideal in den CPU-Cache geladen werden können.

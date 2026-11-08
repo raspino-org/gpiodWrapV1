@@ -9,8 +9,8 @@
  *
  * @author Kay Donau
  * @gpiodWrapV1
- * @version 0.1.0
- * @date 06.11.2026
+ * @version 0.1.1
+ * @date 07.11.2026
  *
  * @github https://github.com/raspino-org/gpiodWrapV1
  *
@@ -55,7 +55,6 @@
 #include <string>
 #include <csignal>
 #include <cstring>
-#include <iostream>
 #include <optional>
 #include <filesystem>
 
@@ -239,7 +238,6 @@ public:
 
 public:
 
-
     /**
     * @brief Open gpio chip by number.
     * @param Integer chip number, mostly 0.
@@ -313,7 +311,7 @@ public:
                       const char *consumer = "gpiodWrap")
     {
 
-        validRequest(pin);
+        if (!validRequest(pin)) return -1;
 
         PinSettings settings;
         settings.consumer    = consumer;
@@ -349,7 +347,7 @@ public:
                       const char *consumer = "gpiodWrap")
     {
 
-        validRequest(pin);
+        if (!validRequest(pin)) return -1;
 
         PinSettings settings;
         settings.consumer    = consumer;
@@ -377,7 +375,7 @@ public:
      */
     int configurePin(unsigned int pin, const PinSettings& settings) {
 
-        validRequest(pin);
+        if (!validRequest(pin)) return -1;
         return lineRequest(pin, settings);
     }
 
@@ -391,7 +389,7 @@ public:
     */
     int setPin(unsigned int pin, PinValue value) {
 
-        validRequest(pin);
+        if (!validRequest(pin)) return -1;
 
         struct gpiod_line* line = static_line_data[pin].request;
         if (!line) return -1;
@@ -412,7 +410,7 @@ public:
     */
     PinValue getPin(unsigned int pin) {
 
-        validRequest(pin);
+        if (!validRequest(pin)) return PinValue::ERROR;
 
         struct gpiod_line* line = static_line_data[pin].request;
         if (!line) return PinValue::ERROR;
@@ -433,7 +431,7 @@ public:
     */
     std::optional<PinValue> getPinChange(unsigned int pin) {
 
-        validRequest(pin);
+        if (!validRequest(pin)) return PinValue::ERROR;
 
         struct gpiod_line* line = static_line_data[pin].request;
         if (!line) return PinValue::ERROR;
@@ -443,14 +441,21 @@ public:
 
         const bool rawValue = (value != 0);
 
-        if (line_change_state[pin] == rawValue) {
+        if (!line_change[pin].received) {
+            line_change[pin].current = rawValue;
+            line_change[pin].received = 1;
+            return std::nullopt;
+        }
+
+        if (line_change[pin].current == rawValue) {
             return std::nullopt; 
         }
 
-        line_change_state[pin] = rawValue;
+        line_change[pin].current = rawValue;
 
         return rawValue ? PinValue::HIGH : PinValue::LOW;
     }
+   
 
 
 
@@ -467,7 +472,19 @@ private:
     };
 
     std::array<StaticLineData, MaxEntries> static_line_data;
-    std::array<bool, MaxEntries> line_change_state;
+
+
+    struct LineChange {
+        uint8_t current  : 1;
+        uint8_t received : 1;
+
+        LineChange() :
+        current(0),
+        received(0)
+        {}
+    };
+
+    std::array<LineChange, MaxEntries> line_change;
 
     std::atomic<bool> watchdog_running{false};
     std::thread watchdog_thread;
@@ -697,7 +714,6 @@ private:
             }
 
             if constexpr (EnableSignalHandling) {
-
                 closeChip();
 
                 uint32_t sig = caught_signal_.load(std::memory_order_relaxed);

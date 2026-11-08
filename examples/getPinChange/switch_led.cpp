@@ -39,7 +39,7 @@ gpiodWrapV1 gpio;
 
 constexpr int led = 17;
 constexpr int button = 27;
-bool change = false;
+bool change = true;
 
 int main() {
     using namespace gpiodwrapv1;

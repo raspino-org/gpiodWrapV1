@@ -136,11 +136,11 @@ Uncontrolled program termination (e.g., via `Ctrl + C` / `SIGINT or SIGTERM`) ca
 If your application logic manages OS signals independently, the built-in signal interception mechanism and its watchdog thread can be disabled entirely with zero runtime overhead via CMake:
 
 ```bash
-cmake -DGPIODWRAPV1_DISABLE_SIGNALS=ON ..
+cmake -DNO_SIGNAL_HANDLING=ON ..
 ```
 In C++ Source Code:
 ```
-#define GPIODWRAP_NO_SIGNALS
+#define NO_SIGNAL_HANDLING
 #include "gpiodWrap.hpp"
 ```
 

@@ -17,7 +17,7 @@ Heutige Schwerpunkte: Konstruktor, Destruktor, Signal-Handling und der Watchdog-
 ### Optimized
 - **Konstruktor-Struktur:** Der Watchdog-Thread ist bei deaktiviertem Signal-Handling nun vollständig inaktiv. Für zukünftige Versionen ist vorbereitet, dass der Watchdog weitere Kontrollaufgaben übernimmt und dann standardmäßig aktiv sein wird.
 - **Destruktor & Signal-Lebenszyklus:** 
-  - *Szenario A (Reguläres Ende):* Läuft ein Programm bis zum Ende durch, deaktiviert der Destruktor den Watchdog kontrolliert und führt `closeChip()` aus. 
+  - *Szenario A (Reguläres Ende):* Läuft ein Programm bis zum Ende durch, deaktiviert der Destruktor den Watchdog kontrolliert und führt `closeChip()` aus (`Safe-by-Default`). 
   - *Szenario B (Abbruch via Strg+C):* Wird das Programm hart unterbrochen, fängt der Watchdog das Signal ab, versetzt alle Leitungen augenblicklich in den sicheren Zustand (`Safe-by-Default`) und gibt das Signal via POSIX-`raise()` (^C) sauber an das Betriebssystem zurück.
   - *Wichtiger Hinweis:* Ohne Signal-Handler können die GPIO-Lines bei einem harten Abbruch nicht in den sicheren Input-Zustand zurückgesetzt werden.
 

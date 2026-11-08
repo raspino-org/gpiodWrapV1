@@ -9,8 +9,8 @@
  *
  * @author Kay Donau
  * @gpiodWrapV1
- * @version 0.1.1
- * @date 07.11.2026
+ * @version 0.1.2
+ * @date 08.11.2026
  *
  * @github https://github.com/raspino-org/gpiodWrapV1
  *
@@ -216,21 +216,19 @@ public:
 
     explicit gpiodWrapV1(int chipNum = -1) {
 
-       watchdog();
+       if constexpr (EnableSignalHandling) watchdog();
        openChip(chipNum);
 
     }
 
     ~gpiodWrapV1() {
 
-        closeChip();
-
-        watchdog_running.store(false, std::memory_order_relaxed);
-        if (watchdog_thread.joinable()) watchdog_thread.join();
-
         if constexpr (EnableSignalHandling) {
-            shutdown_requested_.store(1, std::memory_order_relaxed);
+            watchdog_running.store(false, std::memory_order_relaxed);
+            if (watchdog_thread.joinable()) watchdog_thread.join();
         }
+
+        closeChip();
 
     }
 
@@ -709,23 +707,27 @@ private:
 
         watchdog_thread = std::thread([this]() {
 
-            while (!shutdown_requested_.load(std::memory_order_relaxed)) {
+            while (watchdog_running.load(std::memory_order_relaxed) && !shutdown_requested_.load(std::memory_order_relaxed)) {       
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
 
             if constexpr (EnableSignalHandling) {
-                closeChip();
 
-                uint32_t sig = caught_signal_.load(std::memory_order_relaxed);
-                if (sig != 0) {
-                    ::sigaction(SIGINT, &oldSigInt_, nullptr);
-                    ::sigaction(SIGTERM, &oldSigTerm_, nullptr);
+                if (shutdown_requested_.load(std::memory_order_relaxed)) {
 
-                    struct sigaction sa_dfl{};
-                    sa_dfl.sa_handler = SIG_DFL;
-                    ::sigemptyset(&sa_dfl.sa_mask);
-                    ::sigaction(sig, &sa_dfl, nullptr);
-                    ::raise(sig);
+                    closeChip();
+
+                    uint32_t sig = caught_signal_.load(std::memory_order_relaxed);
+                    if (sig != 0) {
+                        ::sigaction(SIGINT, &oldSigInt_, nullptr);
+                        ::sigaction(SIGTERM, &oldSigTerm_, nullptr);
+
+                        struct sigaction sa_dfl{};
+                        sa_dfl.sa_handler = SIG_DFL;
+                        ::sigemptyset(&sa_dfl.sa_mask);
+                        ::sigaction(sig, &sa_dfl, nullptr);
+                        ::raise(sig);
+                    }
                 }
             }
         });

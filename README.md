@@ -101,7 +101,7 @@ The project relies entirely on CMake. All executable examples located in the `ex
 ```bash
 mkdir build && cd build
 cmake ..
-make -j\$(nproc)
+make
 ```
 
 ---
@@ -136,11 +136,11 @@ Uncontrolled program termination (e.g., via `Ctrl + C` / `SIGINT or SIGTERM`) ca
 If your application logic manages OS signals independently, the built-in signal interception mechanism and its watchdog thread can be disabled entirely with zero runtime overhead via CMake:
 
 ```bash
-cmake -DGPIODWRAPV1_DISABLE_SIGNALS=ON ..
+cmake -DNO_SIGNAL_HANDLING=ON ..
 ```
 In C++ Source Code:
 ```
-#define GPIODWRAP_NO_SIGNALS
+#define NO_SIGNAL_HANDLING
 #include "gpiodWrap.hpp"
 ```
 
@@ -160,11 +160,14 @@ constexpr int LED_PIN = 17;
 constexpr int BUTTON_PIN = 27;
 
 int main() {
+
+    using namespace gpiodwrapv1;
+
     // Configure Pin 27 as an input with an active pull-up and 30ms hrtimer or hardware debouncing
-    gpio.configurePin(BUTTON_PIN, PinMode::PULLUP, 30);
+    gpio.configurePin(BUTTON_PIN, PULLUP, 30);
     
     // Configure Pin 17 as a standard push-pull output
-    gpio.configurePin(LED_PIN, PinMode::OUTPUT);
+    gpio.configurePin(LED_PIN, OUTPUT);
 
     bool led_state = false;
 
@@ -172,9 +175,9 @@ int main() {
         // Fetch the pin state only when a physical level transition occurs
         auto change_event = gpio.getPinChange(BUTTON_PIN);
 
-        if (change_event == PinValue::LOW) { // Button pressed (switched to GND)
+        if (change_event == LOW) { // Button pressed (switched to GND)
             led_state = !led_state;
-            gpio.setPin(LED_PIN, led_state ? PinValue::HIGH : PinValue::LOW);
+            gpio.setPin(LED_PIN, led_state ? HIGH : LOW);
             std::cout << "LED toggled: " << (led_state ? "ON" : "OFF") << "\n";
         }
 

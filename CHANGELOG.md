@@ -3,6 +3,25 @@
 
 Alle signifikanten Änderungen am gpiodWrapV1 werden hier dokumentiert.
 
+
+## [0.1.2] 2026-11-08
+
+> **Hotfix & Stabilitäts-Patch für Thread-Synchronisation und Lebenszyklus**
+
+Heutige Schwerpunkte: Konstruktor, Destruktor, Signal-Handling und der Watchdog-Thread.
+
+### Fixed
+- **Watchdog-Thread (Programmende-Blockade gelöst):** Ein Logikfehler in der `while`-Schleife des Watchdogs wurde behoben. Der Thread war nicht korrekt mit seinem `running`-Flag verknüpft, was dazu führte, dass sich regulär auslaufende Programme am Ende von `main()` im Hintergrund aufgehängt haben. 
+- **Race Condition beim Beenden behoben:** Hauptthread (Destruktor) und Hintergrundthread (Watchdog) wurden sauber synchronisiert. Es ist nun systemweit ausgeschlossen, dass beide Instanzen gleichzeitig oder nacheinander `closeChip()` ausführen. Das doppelte Ausführen der Aufräum-Logik ist damit vollständig behoben.
+
+### Optimized
+- **Konstruktor-Struktur:** Der Watchdog-Thread ist bei deaktiviertem Signal-Handling nun vollständig inaktiv. Für zukünftige Versionen ist vorbereitet, dass der Watchdog weitere Kontrollaufgaben übernimmt und dann standardmäßig aktiv sein wird.
+- **Destruktor & Signal-Lebenszyklus:** 
+  - *Szenario A (Reguläres Ende):* Läuft ein Programm bis zum Ende durch, deaktiviert der Destruktor den Watchdog kontrolliert und führt `closeChip()` aus. 
+  - *Szenario B (Abbruch via Strg+C):* Wird das Programm hart unterbrochen, fängt der Watchdog das Signal ab, versetzt alle Leitungen augenblicklich in den sicheren Zustand (`Safe-by-Default`) und gibt das Signal via POSIX-`raise()` (^C) sauber an das Betriebssystem zurück.
+  - *Wichtiger Hinweis:* Ohne Signal-Handler können die GPIO-Lines bei einem harten Abbruch nicht in den sicheren Input-Zustand zurückgesetzt werden.
+
+---
 ## [0.1.1] 2026-11-07
 
 > **Hotfix & Stabilitäts-Patch für die Flankenerkennung und API-Sicherheit**

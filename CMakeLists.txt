@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16) # Raspbian 10 Buster / Bookworm kompatibel
 
-project(gpiodWrapV1 VERSION 0.1.1 LANGUAGES CXX)
+project(gpiodWrapV1 VERSION 0.1.2 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -42,11 +42,12 @@ else()
 
         if(GPIODWRAPV1_DISABLE_SIGNALS)
             message(STATUS "SIGNAL-HANDLING DISABLE")
-            target_compile_definitions(gpiodWrapV1 INTERFACE GPIODWRAPV1_NO_SIGNALS)
+            target_compile_definitions(gpiodWrapV1 INTERFACE NO_SIGNAL_HANDLING)
         else()
             message(STATUS "SIGNAL-HANDLING ENABLE")
         endif()
 
         add_subdirectory(examples)
+
     endif()
 endif()

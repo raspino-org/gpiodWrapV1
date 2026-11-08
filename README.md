@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="/resources/images/gwv1.png" alt="gpiodWrapV! Logo" width="260">
+  <img src="/resources/images/gwv1.png" alt="gpiodWrapV1 Logo" width="260">
 </div>
 <br>
 
@@ -8,13 +8,14 @@ A highly efficient, lightweight, and thread-safe C++17 wrapper library for **lib
 
 This project was specifically engineered for maximum performance on legacy embedded hardware (such as the **Raspberry Pi 1 / ARMv6** running Debian Bookworm). It eliminates unnecessary runtime overhead—such as map lookups—and utilizes atomic, lock-free CPU operations for robust signal and resource management.
 
+#### Also available for libgpiod V2 (v2.x) <a href="https://github.com/raspino-org/gpiodWrap">gpioWrap</a>
 ---
 ## 🚀 Features
-✔️ **Header-Only Interface:** Minimalistic architecture for effortless integration into your CMake projects.
-✔️ **Combined Pin Modes:** No tedious flag management—logical direction and physical pull resistors are configured in a single, intuitive step.
-✔️ **Kernel-Level Debouncing:** Utilizes native Linux hardware/kernel-level debouncing via the libgpiod C-API.
-✔️ **Safe-by-Default Architecture:** Upon application exit (including forced termination via `Ctrl+C`), all requested pins are automatically reverted to a safe, high-impedance `INPUT` state.
-✔️ **Works with libgpiod >=1.6.0
+✔️ **Header-Only Interface:** Minimalistic architecture for effortless integration into your CMake projects.  
+✔️ **Combined Pin Modes:** No tedious flag management—logical direction and physical pull resistors are configured in a single, intuitive step.  
+✔️ **Kernel-Level Debouncing:** Utilizes native Linux hardware/kernel-level debouncing via the libgpiod C-API.  
+✔️ **Safe-by-Default:** All requested lines are automatically reverted to a safe, high-impedance INPUT state.  
+✔️ **GPIO Wrapper:** Works with libgpiod >=1.6.0
 
 ---
 ## ✨ System Requirements
@@ -77,7 +78,7 @@ This wrapper provides easy functions like:
       <td>Reads the intput configured line and return Pinvalue HIGH/LOW/ERROR.</td>
     </tr>
     <tr>
-      <td><code>getPinEvent(pin)</code></td>
+      <td><code>getPinChange(pin)</code></td>
       <td>Reads the intput configured line and return Pinvalue HIGH/LOW/ERROR at every level change.</td>
     </tr>
   </tbody>
@@ -137,27 +138,10 @@ If your application logic manages OS signals independently, the built-in signal 
 ```bash
 cmake -DGPIODWRAPV1_DISABLE_SIGNALS=ON ..
 ```
-1. In C++ Source Code:
+In C++ Source Code:
 ```
 #define GPIODWRAP_NO_SIGNALS
 #include "gpiodWrap.hpp"
-```
-
-2. Via CMake:
-```
-# old school
-mkdir -p build && cd build
-cmake .. -DGPIODWRAP_DISABLE_SIGNALS=ON
-make or make -j4
-
-# Directly in the project directory:
-cmake -B build -DGPIODWRAP_DISABLE_SIGNALS=ON
-cmake --build build
-```
-
-3. Direct GCC/Clang Invocation:
-```
-g++ -std=c++17 -DGPIODWRAP_NO_SIGNALS main.cpp -o app -lgpiod
 ```
 
 ---
@@ -176,7 +160,7 @@ constexpr int LED_PIN = 17;
 constexpr int BUTTON_PIN = 27;
 
 int main() {
-    // Configure Pin 27 as an input with an active pull-up and 30ms hardware debouncing
+    // Configure Pin 27 as an input with an active pull-up and 30ms hrtimer or hardware debouncing
     gpio.configurePin(BUTTON_PIN, PinMode::PULLUP, 30);
     
     // Configure Pin 17 as a standard push-pull output
@@ -215,4 +199,5 @@ Feel free to fork, enhance, or suggest features.
 
 ---
 ⭐ If this wrapper helps your project — consider starring it on GitHub!
+
 

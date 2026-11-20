@@ -215,6 +215,7 @@ Feel free to fork, enhance, or suggest features.
 ---
 ⭐ If this wrapper helps your project — consider starring it on GitHub!
 
-Copyright (C) 2026 Raspino-Projekt <dev@raspino.org>  
+Copyright (C) 2026 Raspino-Projekt <dev@raspino.org>
 
+*Raspberry Pi is a trademark of the Raspberry Pi Foundation. Arduino is a trademark of Arduino AG. This project is an independent open-source development and is not affiliated with, endorsed, or sponsored by the Raspberry Pi Foundation or Arduino AG.*
 

@@ -9,6 +9,50 @@ A highly efficient, lightweight, and thread-safe C++17 wrapper library for **lib
 This project was specifically engineered for maximum performance on legacy embedded hardware (such as the **Raspberry Pi 1 / ARMv6** running Debian Bookworm). It eliminates unnecessary runtime overhead—such as map lookups—and utilizes atomic, lock-free CPU operations for robust signal and resource management.
 
 #### Also available for libgpiod V2 (v2.x) <a href="https://github.com/raspino-org/gpiodWrap">gpioWrap</a>
+
+---
+### Quick Code Example (`Create a project in under 5 minutes`)
+
+```cpp
+#include <iostream>
+#include <chrono>
+#include <thread>
+
+#include "gpiodWrapV1.hpp"
+
+gpiodWrapV1 gpio;
+
+constexpr int LED_PIN = 17;
+constexpr int BUTTON_PIN = 27;
+
+int main() {
+
+    using namespace gpiodwrapv1;
+
+    // Configure Pin 27 as an input with an active pull-up and 30ms hrtimer or hardware debouncing
+    gpio.configurePin(BUTTON_PIN, PULLUP, 30);
+    
+    // Configure Pin 17 as a standard push-pull output
+    gpio.configurePin(LED_PIN, OUTPUT);
+
+    bool led_state = false;
+
+    while(true) {
+        // Fetch the pin state only when a physical level transition occurs
+        auto change_event = gpio.getPinChange(BUTTON_PIN);
+
+        if (change_event == LOW) { // Button pressed (switched to GND)
+            led_state = !led_state;
+            gpio.setPin(LED_PIN, led_state ? HIGH : LOW);
+            std::cout << "LED toggled: " << (led_state ? "ON" : "OFF") << "\n";
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds{100});
+    }
+    retu
+rn 0;
+}
+```
 ---
 ## 🚀 Features
 ✔️ **Header-Only Interface:** Minimalistic architecture for effortless integration into your CMake projects.  
@@ -145,54 +189,22 @@ In C++ Source Code:
 ```
 
 ---
-## Quick Code Example (`switch_led`)
+## 📄 License: GNU GPLv3
+gpiodWrap is 100% free and open-source software. You are welcome to use, modify, and share it in your personal, educational, and open-source projects. Under the GPLv3, any distributed software that incorporates gpiodWrap must also remain free and open-source under the same license—keeping improvements open for the entire Raspberry Pi community.
 
-```cpp
-#include <iostream>
-#include <chrono>
-#include <thread>
+## What does GPLv3 actually mean – and why was it chosen for this api & Raspino-Initiative?
 
-#include "gpiodWrapV1.hpp"
+#### Protection Against Exploitation & Fairness for the Community
 
-gpiodWrapV1 gpio;
+* **Protection Against "One-Way Commercialization":**
+  Under permissive licenses like MIT or Apache-2.0, any vendor can take open-source code, embed it into a proprietary commercial product, sell it for profit, and never contribute a single improvement back to the community.
 
-constexpr int LED_PIN = 17;
-constexpr int BUTTON_PIN = 27;
+* **Fairness Through Copyleft:**
+  With **GPLv3**, every **maker**, **student**, **hobbyist**, and open-source project is completely free to use, modify, and share these sources at zero cost. However, anyone who integrates this code into distributed software must also release their software under the GPLv3, ensuring that enhancements remain open for the entire **community**.
 
-int main() {
-
-    using namespace gpiodwrapv1;
-
-    // Configure Pin 27 as an input with an active pull-up and 30ms hrtimer or hardware debouncing
-    gpio.configurePin(BUTTON_PIN, PULLUP, 30);
-    
-    // Configure Pin 17 as a standard push-pull output
-    gpio.configurePin(LED_PIN, OUTPUT);
-
-    bool led_state = false;
-
-    while(true) {
-        // Fetch the pin state only when a physical level transition occurs
-        auto change_event = gpio.getPinChange(BUTTON_PIN);
-
-        if (change_event == LOW) { // Button pressed (switched to GND)
-            led_state = !led_state;
-            gpio.setPin(LED_PIN, led_state ? HIGH : LOW);
-            std::cout << "LED toggled: " << (led_state ? "ON" : "OFF") << "\n";
-        }
-
-        std::this_thread::sleep_for(std::chrono::milliseconds{100});
-    }
-    return 0;
-}
-```
-
----
-## 📄 License
-
-Copyright (C) 2026 Raspino-Projekt <dev@raspino.org>  
-This API is proudly released under the terms of the **GNU General Public License v3.0**.  
-You are free to use, modify, and distribute this project under the terms of the GPLv3.
+* **Flexibility via Dual Licensing:**
+  Because full copyright remains with the author, legitimate commercial partners can still request an individual proprietary license (dual licensing) when needed—a proven model used by major open-source projects such as Qt and My
+  SQL.
 
 ---
 ## 🤝 Contributions
@@ -202,5 +214,7 @@ Feel free to fork, enhance, or suggest features.
 
 ---
 ⭐ If this wrapper helps your project — consider starring it on GitHub!
+
+Copyright (C) 2026 Raspino-Projekt <dev@raspino.org>  
 
 
